@@ -174,18 +174,18 @@ bHome.addActionListener(new ActionListener() {
 bStatus.addActionListener(new ActionListener() {
     @Override
     public void actionPerformed(ActionEvent e) {
-        // เปิดหน้า HomeGUI
+        // เปิดหน้า StatusGUI
         StatusGUI statusGUI = new StatusGUI();
         JOptionPane.showMessageDialog(statusGUI, "You are already on Status page");
 
         // ปิดหน้าปัจจุบัน (StatusGUI)
-        dispose();
+        
     }
 });
 bHistory.addActionListener(new ActionListener() {
     @Override
     public void actionPerformed(ActionEvent e) {
-        // เปิดหน้า HomeGUI
+        // เปิดหน้า HistoryGUI
         HistoryGUI historyGUI = new HistoryGUI();
         historyGUI.setVisible(true);
 
@@ -268,7 +268,30 @@ bHistory.addActionListener(new ActionListener() {
             model2 = new DefaultTableModel(data2, cols);
             tableFloor2 = new JTable(model2);
             setupTable(tableFloor2);
+        }if (floor1) {
+    model1 = new DefaultTableModel(data1, cols);
+    tableFloor1 = new JTable(model1) {
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return false; // ปิดการแก้ไขทุก cell
         }
+    };
+    tableFloor1.getTableHeader().setReorderingAllowed(false); // ห้ามลากหัวคอลัมน์
+    tableFloor1.getTableHeader().setResizingAllowed(false);   // ห้ามปรับขนาดคอลัมน์
+    setupTable(tableFloor1);
+} else {
+    model2 = new DefaultTableModel(data2, cols);
+    tableFloor2 = new JTable(model2) {
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return false; // ปิดการแก้ไขทุก cell
+        }
+    };
+    tableFloor2.getTableHeader().setReorderingAllowed(false);
+    tableFloor2.getTableHeader().setResizingAllowed(false);
+    setupTable(tableFloor2);
+}
+
 
         JTable table = floor1 ? tableFloor1 : tableFloor2;
 

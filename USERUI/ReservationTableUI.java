@@ -1,7 +1,9 @@
-package USERUI;
+
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -54,6 +56,18 @@ public class ReservationTableUI extends JFrame {
         navPanel.add(btnMyBooking);
 
         mainPanel.add(navPanel, BorderLayout.NORTH);
+
+        btnMyBooking.addActionListener((ActionListener) new ActionListener() {
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        // เปิดหน้า HomeGUI
+        MyReservationGUI MyReservationGUI = new MyReservationGUI();
+        MyReservationGUI.setVisible(true);
+
+        // ปิดหน้าปัจจุบัน (StatusGUI)
+        dispose();
+    }
+});
 
         // =================== ส่วนกลาง ===================
         JPanel centerPanel = new JPanel(new BorderLayout(10, 10));
