@@ -4,6 +4,8 @@ import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Enumeration;
 
 public class StatusGUI extends JFrame {
@@ -13,8 +15,7 @@ public class StatusGUI extends JFrame {
     private JComboBox<String> cbDate, cbFloor;
     private JTable tableAll;  
     private DefaultTableModel modelAll;  
-private JPanel sectionAll;
-
+    private JPanel sectionAll;
 
     public StatusGUI() {
         // Fix ฟอนต์ไทย
@@ -42,7 +43,14 @@ private JPanel sectionAll;
         filter.setBackground(new Color(240, 245, 255));
 
         JLabel lblDate = new JLabel("วันที่จอง:");
-        cbDate = new JComboBox<>(new String[]{"22/09/2025", "23/09/2025", "24/09/2025"});
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDate today = LocalDate.now();
+        LocalDate tomorrow = today.plusDays(1);
+
+        cbDate = new JComboBox<>(new String[]{
+                today.format(formatter),
+                tomorrow.format(formatter)
+        });
 
         JLabel lblFloor = new JLabel("เลือกชั้น:");
         cbFloor = new JComboBox<>(new String[]{"ทุกชั้น", "ชั้น 1", "ชั้น 2"});
@@ -68,13 +76,11 @@ private JPanel sectionAll;
 
         content.add(north, BorderLayout.NORTH);
 
-      
-       // Floor sections
+        // Floor sections
         sectionAll    = buildAllSection("ทุกชั้น");   // ค่าเริ่มต้น
         sectionFloor1 = buildFloorSection("ชั้น 1", true);
         sectionFloor2 = buildFloorSection("ชั้น 2", false);
 
-        // ตั้งค่าเริ่มต้น → โชว์เฉพาะ "ทุกชั้น"
         sectionFloor1.setVisible(false);
         sectionFloor2.setVisible(false);
 
@@ -88,7 +94,6 @@ private JPanel sectionAll;
         center.add(sectionFloor2);
 
         content.add(center, BorderLayout.CENTER);
-
 
         // Action buttons
         JPanel action = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 15));
@@ -117,89 +122,72 @@ private JPanel sectionAll;
 
         cbFloor.addActionListener(e -> updateFloorVisibility());
     }
-private JPanel buildSidebar() {
-    JPanel sidebar = new JPanel(new BorderLayout());
-    sidebar.setBackground(Color.WHITE);
-    sidebar.setPreferredSize(new Dimension(200, 750));
 
-    // ===== Logo + ADMIN =====
-    JLabel logo = new JLabel();
-    try {
-        ImageIcon icon = new ImageIcon(getClass().getResource("images2.png"));
-        Image img = icon.getImage().getScaledInstance(54, 54, Image.SCALE_SMOOTH);
-        logo.setIcon(new ImageIcon(img));
-    } catch (Exception ignored) {}
+    private JPanel buildSidebar() {
+        JPanel sidebar = new JPanel(new BorderLayout());
+        sidebar.setBackground(Color.WHITE);
+        sidebar.setPreferredSize(new Dimension(200, 750));
 
-    JLabel lbl = new JLabel("ADMIN");
-    lbl.setFont(new Font("Tahoma", Font.BOLD, 22));
+        JLabel logo = new JLabel();
+        try {
+            ImageIcon icon = new ImageIcon(getClass().getResource("images2.png"));
+            Image img = icon.getImage().getScaledInstance(54, 54, Image.SCALE_SMOOTH);
+            logo.setIcon(new ImageIcon(img));
+        } catch (Exception ignored) {}
 
-    JPanel header = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 20));
-    header.setBackground(Color.WHITE);
-    header.add(logo);
-    header.add(lbl);
+        JLabel lbl = new JLabel("ADMIN");
+        lbl.setFont(new Font("Tahoma", Font.BOLD, 22));
 
-    sidebar.add(header, BorderLayout.NORTH);
+        JPanel header = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 20));
+        header.setBackground(Color.WHITE);
+        header.add(logo);
+        header.add(lbl);
 
-    // ===== Menu Buttons =====
-    JPanel menuPanel = new JPanel();
-    menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.Y_AXIS));
-    menuPanel.setBackground(Color.WHITE);
+        sidebar.add(header, BorderLayout.NORTH);
 
-    JButton bHome = makeSideButton("Home");
-    JButton bStatus = makeSideButton("Status");
-    JButton bHistory = makeSideButton("History");
-    
+        JPanel menuPanel = new JPanel();
+        menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.Y_AXIS));
+        menuPanel.setBackground(Color.WHITE);
 
-    menuPanel.add(bHome);
-    menuPanel.add(Box.createVerticalStrut(15));
-    menuPanel.add(bStatus);
-    menuPanel.add(Box.createVerticalStrut(15));
-    menuPanel.add(bHistory);
-    
+        JButton bHome = makeSideButton("Home");
+        JButton bStatus = makeSideButton("Status");
+        JButton bHistory = makeSideButton("History");
 
+        menuPanel.add(bHome);
+        menuPanel.add(Box.createVerticalStrut(15));
+        menuPanel.add(bStatus);
+        menuPanel.add(Box.createVerticalStrut(15));
+        menuPanel.add(bHistory);
 
+        bHome.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                AdminHomeGUI home = new AdminHomeGUI();
+                home.setVisible(true);
+                dispose();
+            }
+        });
 
-// ใส่ ActionListener ให้ปุ่ม Home
-bHome.addActionListener(new ActionListener() {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        // เปิดหน้า HomeGUI
-        AdminHomeGUI home = new AdminHomeGUI();
-        home.setVisible(true);
+        bStatus.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(null, "You are already on Status page");
+            }
+        });
 
-        // ปิดหน้าปัจจุบัน (StatusGUI)
-        dispose();
+        bHistory.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                HistoryGUI historyGUI = new HistoryGUI();
+                historyGUI.setVisible(true);
+                dispose();
+            }
+        });
+
+        sidebar.add(menuPanel, BorderLayout.CENTER);
+
+        return sidebar;
     }
-});
-bStatus.addActionListener(new ActionListener() {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        // เปิดหน้า StatusGUI
-        StatusGUI statusGUI = new StatusGUI();
-        JOptionPane.showMessageDialog(statusGUI, "You are already on Status page");
-
-        // ปิดหน้าปัจจุบัน (StatusGUI)
-        
-    }
-});
-bHistory.addActionListener(new ActionListener() {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        // เปิดหน้า HistoryGUI
-        HistoryGUI historyGUI = new HistoryGUI();
-        historyGUI.setVisible(true);
-
-        // ปิดหน้าปัจจุบัน (StatusGUI)
-        dispose();
-    }
-});
-
-
-    sidebar.add(menuPanel, BorderLayout.CENTER);
-
-    return sidebar;
-}
-
 
     private JButton makeSideButton(String text) {
         JButton b = new JButton(text);
@@ -209,51 +197,57 @@ bHistory.addActionListener(new ActionListener() {
         b.setAlignmentX(Component.CENTER_ALIGNMENT);
         return b;
     }
+
     private JPanel buildAllSection(String title) {
-    String[] cols = {"ห้อง", "09:00-10:00", "10:00-11:00", "11:00-12:00",
-            "12:00-13:00", "13:00-14:00", "14:00-15:00", "15:00-16:00"};
+        String[] cols = {"ห้อง", "09:00-10:00", "10:00-11:00", "11:00-12:00",
+                "12:00-13:00", "13:00-14:00", "14:00-15:00", "15:00-16:00"};
 
-    Object[][] dataAll = {
-            {"S01","Available","Available","Available","Available","Available","Available","Available"},
-            {"S02","Available","Available","Available","Available","Available","Available","Available"},
-            {"S03","Available","Available","Available","Available","Available","Available","Available"},
-            {"L01","Available","Available","Available","Available","Available","Available","Available"},
-            {"L02","Available","Available","Available","Available","Available","Available","Available"},
-            {"L03","Available","Available","Available","Available","Available","Available","Available"},
-    };
+        Object[][] dataAll = {
+                {"S01","Available","Available","Available","Available","Available","Available","Available"},
+                {"S02","Available","Available","Available","Available","Available","Available","Available"},
+                {"S03","Available","Available","Available","Available","Available","Available","Available"},
+                {"L01","Available","Available","Available","Available","Available","Available","Available"},
+                {"L02","Available","Available","Available","Available","Available","Available","Available"},
+                {"L03","Available","Available","Available","Available","Available","Available","Available"},
+        };
 
-    modelAll = new DefaultTableModel(dataAll, cols);
-    tableAll = new JTable(modelAll);
-    setupTable(tableAll);
+        modelAll = new DefaultTableModel(dataAll, cols) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // ❌ ปิดแก้ไข
+            }
+        };
+        tableAll = new JTable(modelAll);
+        setupTable(tableAll);
 
-    JLabel lbl = new JLabel(title, SwingConstants.CENTER);
-    lbl.setFont(new Font("Tahoma", Font.BOLD, 18));
-    lbl.setBorder(BorderFactory.createEmptyBorder(8, 0, 8, 0));
+        JLabel lbl = new JLabel(title, SwingConstants.CENTER);
+        lbl.setFont(new Font("Tahoma", Font.BOLD, 18));
+        lbl.setBorder(BorderFactory.createEmptyBorder(8, 0, 8, 0));
 
-    JScrollPane sp = new JScrollPane(tableAll);
-    sp.setPreferredSize(preferredSizeOf(tableAll));
+        JScrollPane sp = new JScrollPane(tableAll);
+        sp.setPreferredSize(preferredSizeOf(tableAll));
 
-    JPanel wrap = new JPanel();
-    wrap.setBackground(Color.WHITE);
-    wrap.setLayout(new BoxLayout(wrap, BoxLayout.Y_AXIS));
-    wrap.add(lbl);
-    wrap.add(sp);
-    return wrap;
-}
+        JPanel wrap = new JPanel();
+        wrap.setBackground(Color.WHITE);
+        wrap.setLayout(new BoxLayout(wrap, BoxLayout.Y_AXIS));
+        wrap.add(lbl);
+        wrap.add(sp);
+        return wrap;
+    }
 
     private JPanel buildFloorSection(String title, boolean floor1) {
         String[] cols = {"ห้อง", "09:00-10:00", "10:00-11:00", "11:00-12:00",
                 "12:00-13:00", "13:00-14:00", "14:00-15:00", "15:00-16:00"};
 
         Object[][] data1 = {
-                {"            S01","Available","Available","Available","Available","Available","Available","Available"},
+                {"S01","Available","Available","Available","Available","Available","Available","Available"},
                 {"S02","Available","Available","Available","Available","Available","Available","Available"},
                 {"S03","Available","Available","Available","Available","Available","Available","Available"},
                 {"S04","Available","Available","Available","Available","Available","Available","Available"},
                 {"S05","Available","Available","Available","Available","Available","Available","Available"},
         };
         Object[][] data2 = {
-                {"            L01","Available","Available","Available","Available","Available","Available","Available"},
+                {"L01","Available","Available","Available","Available","Available","Available","Available"},
                 {"L02","Available","Available","Available","Available","Available","Available","Available"},
                 {"L03","Available","Available","Available","Available","Available","Available","Available"},
                 {"L04","Available","Available","Available","Available","Available","Available","Available"},
@@ -261,37 +255,24 @@ bHistory.addActionListener(new ActionListener() {
         };
 
         if (floor1) {
-            model1 = new DefaultTableModel(data1, cols);
+            model1 = new DefaultTableModel(data1, cols) {
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                    return false; // ❌ ปิดแก้ไข
+                }
+            };
             tableFloor1 = new JTable(model1);
             setupTable(tableFloor1);
         } else {
-            model2 = new DefaultTableModel(data2, cols);
+            model2 = new DefaultTableModel(data2, cols) {
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                    return false; // ❌ ปิดแก้ไข
+                }
+            };
             tableFloor2 = new JTable(model2);
             setupTable(tableFloor2);
-        }if (floor1) {
-    model1 = new DefaultTableModel(data1, cols);
-    tableFloor1 = new JTable(model1) {
-        @Override
-        public boolean isCellEditable(int row, int column) {
-            return false; // ปิดการแก้ไขทุก cell
         }
-    };
-    tableFloor1.getTableHeader().setReorderingAllowed(false); // ห้ามลากหัวคอลัมน์
-    tableFloor1.getTableHeader().setResizingAllowed(false);   // ห้ามปรับขนาดคอลัมน์
-    setupTable(tableFloor1);
-} else {
-    model2 = new DefaultTableModel(data2, cols);
-    tableFloor2 = new JTable(model2) {
-        @Override
-        public boolean isCellEditable(int row, int column) {
-            return false; // ปิดการแก้ไขทุก cell
-        }
-    };
-    tableFloor2.getTableHeader().setReorderingAllowed(false);
-    tableFloor2.getTableHeader().setResizingAllowed(false);
-    setupTable(tableFloor2);
-}
-
 
         JTable table = floor1 ? tableFloor1 : tableFloor2;
 
@@ -315,6 +296,8 @@ bHistory.addActionListener(new ActionListener() {
         table.setShowGrid(true);
         table.setGridColor(new Color(220, 220, 220));
         table.setFont(new Font("Tahoma", Font.PLAIN, 14));
+        table.getTableHeader().setReorderingAllowed(false); // ❌ ห้ามลากหัวตาราง
+        table.getTableHeader().setResizingAllowed(false);   // ❌ ห้ามปรับขนาดคอลัมน์
 
         JTableHeader header = table.getTableHeader();
         header.setFont(new Font("Tahoma", Font.BOLD, 14));
@@ -360,57 +343,54 @@ bHistory.addActionListener(new ActionListener() {
     }
 
     private void setStatus(String status) {
-    JTable active = tableFloor1.getSelectedRow()>=0 ? tableFloor1 :
-            tableFloor2.getSelectedRow()>=0 ? tableFloor2 :
-            tableAll.getSelectedRow()>=0 ? tableAll : null;
+        JTable active = tableFloor1.getSelectedRow()>=0 ? tableFloor1 :
+                tableFloor2.getSelectedRow()>=0 ? tableFloor2 :
+                tableAll.getSelectedRow()>=0 ? tableAll : null;
 
-    if (active != null) {
-        int r = active.getSelectedRow();
-        int c = active.getSelectedColumn();
-        if (r >= 0 && c > 0) {
-            ((DefaultTableModel)active.getModel()).setValueAt(status, r, c);
-            active.repaint();
+        if (active != null) {
+            int r = active.getSelectedRow();
+            int c = active.getSelectedColumn();
+            if (r >= 0 && c > 0) {
+                ((DefaultTableModel)active.getModel()).setValueAt(status, r, c);
+                active.repaint();
+            }
         }
     }
-}
-
 
     private void resetStatus() {
-    resetModel(model1);
-    resetModel(model2);
-    resetModel(modelAll);
+        resetModel(model1);
+        resetModel(model2);
+        resetModel(modelAll);
 
-    tableFloor1.repaint();
-    tableFloor2.repaint();
-    tableAll.repaint();
-}
+        tableFloor1.repaint();
+        tableFloor2.repaint();
+        tableAll.repaint();
+    }
 
-private void resetModel(DefaultTableModel model) {
-    if (model == null) return;
-    for (int r=0;r<model.getRowCount();r++)
-        for (int c=1;c<model.getColumnCount();c++)
-            model.setValueAt("Available",r,c);
-}
-
+    private void resetModel(DefaultTableModel model) {
+        if (model == null) return;
+        for (int r=0;r<model.getRowCount();r++)
+            for (int c=1;c<model.getColumnCount();c++)
+                model.setValueAt("Available",r,c);
+    }
 
     private void updateFloorVisibility() {
-    String sel = (String) cbFloor.getSelectedItem();
+        String sel = (String) cbFloor.getSelectedItem();
 
-    if ("ทุกชั้น".equals(sel)) {
-        sectionAll.setVisible(true);
-        sectionFloor1.setVisible(false);
-        sectionFloor2.setVisible(false);
-    } else if ("ชั้น 1".equals(sel)) {
-        sectionAll.setVisible(false);
-        sectionFloor1.setVisible(true);
-        sectionFloor2.setVisible(false);
-    } else if ("ชั้น 2".equals(sel)) {
-        sectionAll.setVisible(false);
-        sectionFloor1.setVisible(false);
-        sectionFloor2.setVisible(true);
+        if ("ทุกชั้น".equals(sel)) {
+            sectionAll.setVisible(true);
+            sectionFloor1.setVisible(false);
+            sectionFloor2.setVisible(false);
+        } else if ("ชั้น 1".equals(sel)) {
+            sectionAll.setVisible(false);
+            sectionFloor1.setVisible(true);
+            sectionFloor2.setVisible(false);
+        } else if ("ชั้น 2".equals(sel)) {
+            sectionAll.setVisible(false);
+            sectionFloor1.setVisible(false);
+            sectionFloor2.setVisible(true);
+        }
     }
-}
-
 
     public static void installThaiUIFont(Font f) {
         FontUIResource fui = new FontUIResource(f);
