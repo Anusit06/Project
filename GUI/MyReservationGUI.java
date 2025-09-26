@@ -1,3 +1,4 @@
+package GUI;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -45,6 +46,13 @@ btnSchedule.addActionListener((ActionListener) new ActionListener() {
 
         // ปิดหน้าปัจจุบัน (StatusGUI)
         dispose();
+    }
+});
+        // ปุ่ม ห้อง
+btnRoom.addActionListener((ActionListener) new ActionListener() {
+    public void actionPerformed(ActionEvent e){
+        dispose();
+        new RoomS().setVisible(true);
     }
 });
 
@@ -153,14 +161,6 @@ table.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.gray));
 
 
 centerPanel.add(scrollPane);
-
-
-
-
-
-
-
-
         setVisible(true);
     }
 
@@ -173,8 +173,6 @@ centerPanel.add(scrollPane);
     button.setPreferredSize(new Dimension(160, 40)); // ขนาดปุ่มกำหนดตายตัว
     return button;
 }
-
-
     public static void main(String[] args) {
         SwingUtilities.invokeLater(MyReservationGUI::new);
     }

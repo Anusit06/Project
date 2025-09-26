@@ -1,4 +1,6 @@
+package GUI.Admin;
 import javax.swing.*;
+
 import java.awt.*;
 
 public class HistoryGUI extends JFrame {
@@ -21,7 +23,7 @@ public class HistoryGUI extends JFrame {
         sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS)); // จัดเรียงแนวตั้ง
 
         // โลโก้ + ADMIN
-        ImageIcon adminIcon = new ImageIcon(getClass().getResource("images2.png"));
+        ImageIcon adminIcon = new ImageIcon(getClass().getResource("/GUI/Icon/images2.png"));
         Image img = adminIcon.getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH);
         adminIcon = new ImageIcon(img);
 

@@ -1,3 +1,4 @@
+package GUI;
 
 
 import javax.swing.*;
@@ -68,6 +69,14 @@ public class ReservationTableUI extends JFrame {
         dispose();
     }
 });
+
+    // ปุ่ม ห้อง
+    btnRoom.addActionListener((ActionListener) new ActionListener() {
+        public void actionPerformed(ActionEvent e){
+            dispose();
+            new RoomS().setVisible(true);
+        }
+    });
 
         // =================== ส่วนกลาง ===================
         JPanel centerPanel = new JPanel(new BorderLayout(10, 10));

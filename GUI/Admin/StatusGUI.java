@@ -1,6 +1,8 @@
+package GUI.Admin;
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.table.*;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -100,8 +102,8 @@ public class StatusGUI extends JFrame {
         action.setBackground(new Color(240, 245, 255));
 
         JButton btnAvailable = makeActionButton("Available", Color.GREEN, Color.BLACK);
-        JButton btnReserved  = makeActionButton("Reserved", Color.RED, Color.WHITE);
-        JButton btnClosed    = makeActionButton("Closed", Color.BLACK, Color.WHITE);
+        JButton btnReserved  = makeActionButton("Reserved", Color.RED, Color.BLACK);
+        JButton btnClosed    = makeActionButton("Closed", Color.BLACK, Color.BLACK);
         JButton btnReset     = makeActionButton("Reset", new Color(200, 200, 255), Color.BLACK);
 
         btnAvailable.addActionListener(e -> setStatus("Available"));
@@ -130,7 +132,7 @@ public class StatusGUI extends JFrame {
 
         JLabel logo = new JLabel();
         try {
-            ImageIcon icon = new ImageIcon(getClass().getResource("images2.png"));
+            ImageIcon icon = new ImageIcon(getClass().getResource("/GUI/Icon/images2.png"));
             Image img = icon.getImage().getScaledInstance(54, 54, Image.SCALE_SMOOTH);
             logo.setIcon(new ImageIcon(img));
         } catch (Exception ignored) {}
