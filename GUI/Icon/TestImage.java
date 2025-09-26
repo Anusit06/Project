@@ -6,7 +6,7 @@ import javax.swing.JLabel;
 
 public class TestImage {
     public static void main(String[] args) {
-        java.net.URL imgURL = TestImage.class.getResource("/GUI/Icon/Meeting.png");
+        java.net.URL imgURL = TestImage.class.getResource("/GUI/Icon/images2.png");
         System.out.println("DEBUG: " + imgURL);
 
         JFrame frame = new JFrame("Test Image");

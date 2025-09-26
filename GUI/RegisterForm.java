@@ -327,33 +327,33 @@ public class RegisterForm extends javax.swing.JFrame {
 
         // ถ้า ทุกช่องเป็นช่องว่าง
         if (username.isEmpty() || phonenumber.isEmpty() || email.isEmpty() || password.isEmpty() || confirmpassword.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Please complete the information!");
+            JOptionPane.showMessageDialog(this, "Please fill out the information completely.");
             return;
         }
         // ตรวจสอบ Username
         if (!UsernameValidator.validate(username)) {
-            JOptionPane.showMessageDialog(this, "Username > 3");
+            JOptionPane.showMessageDialog(this, "Username must be at least 4 characters and no more than 16 characters.");
             return;
         }
         // ตรวจสอบ PhoneNumber
         if (!PhoneValidator.validate(phonenumber)) {
-            JOptionPane.showMessageDialog(this, "Phone Number is not correct.");
+            JOptionPane.showMessageDialog(this, "Your phone number is incorrect.");
             return;
         }
         // ตรวจสอบ Email
         if (!EmailValidator.validate(email)) {
-            JOptionPane.showMessageDialog(this, "Email is not correct.");
+            JOptionPane.showMessageDialog(this, "Your email is invalid.");
             return;
         }
         // ถ้ารหัสผ่านไม่ตรงกับคอมเฟริม
         if (!password.equals(confirmpassword)) {
-            JOptionPane.showMessageDialog(this, "Password and Confirm Password not correct!");
+            JOptionPane.showMessageDialog(this, "Password and Confirm Password do not match.");
             return;
         }
         // ตรวจสอบรหัสผ่าน
         PasswordStrength strength = PasswordValidator.validate(password);
         if (strength == PasswordStrength.INVALID || strength == PasswordStrength.WEAK) {
-            JOptionPane.showMessageDialog(this, "Password must be Medium or Strong. But your password is " + strength);
+            JOptionPane.showMessageDialog(this, "Your password is too simple. Your password is " + strength);
             return;
         }
         if (userService != null) {

@@ -1,2 +1,2 @@
-
-owen, Owen12345, 0807915429, owen12@gmail.com
+Username, Password, Phone number, Email
+owen, Owen1234, 0807915429, owen@gmail.com

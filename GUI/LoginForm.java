@@ -6,6 +6,7 @@ package GUI;
 
 import javax.swing.JOptionPane;
 
+import GUI.Admin.AdminHomeGUI;
 import Service.UserService;
 
 /**
@@ -224,7 +225,7 @@ public class LoginForm extends javax.swing.JFrame {
         if (userService.login(username, password)) {
             JOptionPane.showMessageDialog(this, "Login Success!");
             dispose();
-            new AdminHomeGUI().setVisible(true);;
+            new RoomS().setVisible(true);
         }
         else {
             JOptionPane.showMessageDialog(this, "Invalid Username/Password");
