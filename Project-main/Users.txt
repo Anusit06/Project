@@ -1,0 +1,3 @@
+Username, Password, Phone number, Email, Role
+owen, Owen1234, 0807915429, owen@gmail.com, Admin
+Anusit,Kart254890@,0954767030,anusit@gmail.com,User
