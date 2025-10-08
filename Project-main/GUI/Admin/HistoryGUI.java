@@ -1,115 +1,201 @@
 package GUI.Admin;
+
 import javax.swing.*;
+import javax.swing.table.*;
+
+import GUI.RoomS;
 
 import java.awt.*;
+import java.awt.event.*;
 
 public class HistoryGUI extends JFrame {
 
+    private JTable table;
+    private DefaultTableModel model;
+    private JScrollPane scroll;
+
     public HistoryGUI() {
-        // ตั้งค่าหน้าต่างหลัก
         setTitle("Admin Panel - History");
         setSize(1000, 650);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        // ===== Main Panel =====
-        JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setBackground(new Color(226, 237, 255));
+        JPanel root = new JPanel(new BorderLayout());
+        root.setBackground(new Color(226, 237, 255));
 
         // ===== Sidebar =====
-        JPanel sidebar = new JPanel();
-        sidebar.setBackground(Color.WHITE);
-        sidebar.setPreferredSize(new Dimension(180, 600));
-        sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS)); // จัดเรียงแนวตั้ง
+        root.add(buildSidebar(), BorderLayout.WEST);
 
-        // โลโก้ + ADMIN
-        ImageIcon adminIcon = new ImageIcon(getClass().getResource("/GUI/Icon/images2.png"));
-        Image img = adminIcon.getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH);
-        adminIcon = new ImageIcon(img);
-
-
-        JLabel lblAdmin = new JLabel("ADMIN", adminIcon, SwingConstants.CENTER);
-        lblAdmin.setFont(new Font("Tahoma", Font.BOLD, 20));
-        lblAdmin.setAlignmentX(Component.CENTER_ALIGNMENT);
-        lblAdmin.setHorizontalTextPosition(SwingConstants.RIGHT);
-        lblAdmin.setIconTextGap(8);
-
-        // ปุ่ม
-        JButton btnHome = new JButton("Home");
-        JButton btnStatus = new JButton("Status");
-        JButton btnHistory = new JButton("History");
-
-        Dimension btnSize = new Dimension(160, 45); // กำหนดขนาดปุ่มใหม่ (กว้าง x สูง)
-        btnHome.setMaximumSize(btnSize);
-        btnStatus.setMaximumSize(btnSize);
-        btnHistory.setMaximumSize(btnSize);
-        btnHome.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btnStatus.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btnHistory.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        // เพิ่มปุ่มและ spacing
-        sidebar.add(Box.createVerticalStrut(30));
-        sidebar.add(lblAdmin);
-        sidebar.add(Box.createVerticalStrut(50));
-        sidebar.add(btnHome);
-        sidebar.add(Box.createVerticalStrut(20));
-        sidebar.add(btnStatus);
-        sidebar.add(Box.createVerticalStrut(20));
-        sidebar.add(btnHistory);
         // ===== Content =====
-        JPanel contentPanel = new JPanel(new BorderLayout());
-        contentPanel.setBackground(new Color(226, 237, 255));
+        JPanel content = new JPanel(new BorderLayout());
+        content.setBackground(new Color(226, 237, 255));
+        content.add(buildHeader(), BorderLayout.NORTH);
+        content.add(buildTableArea(), BorderLayout.CENTER);
 
-        // Title
-        JLabel lblTitle = new JLabel("History Page", SwingConstants.CENTER);
-        lblTitle.setFont(new Font("Tahoma", Font.BOLD, 24));
-        lblTitle.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
-        contentPanel.add(lblTitle, BorderLayout.NORTH);
+        root.add(content, BorderLayout.CENTER);
+        setContentPane(root);
 
-        // Placeholder (เว้นไว้รอใส่ตาราง/ข้อมูลทีหลัง)
-        JPanel placeholderPanel = new JPanel();
-        placeholderPanel.setBackground(new Color(240, 240, 250));
-        placeholderPanel.setPreferredSize(new Dimension(600, 400));
-
-        JLabel lblComing = new JLabel("History data will be loaded here...", SwingConstants.CENTER);
-        lblComing.setFont(new Font("Tahoma", Font.ITALIC, 16));
-
-        placeholderPanel.setLayout(new BorderLayout());
-        placeholderPanel.add(lblComing, BorderLayout.CENTER);
-
-        contentPanel.add(placeholderPanel, BorderLayout.CENTER);
-
-        // ===== Add panels =====
-        mainPanel.add(sidebar, BorderLayout.WEST);
-        mainPanel.add(contentPanel, BorderLayout.CENTER);
-
-        add(mainPanel);
-
-        // ===== Action ของปุ่ม Sidebar =====
-         btnHome.addActionListener(new java.awt.event.ActionListener() {
-    @Override
-    public void actionPerformed(java.awt.event.ActionEvent e) {
-        dispose();
-        new AdminHomeGUI().setVisible(true);
-        }
-    });
-
-        btnStatus.addActionListener(new java.awt.event.ActionListener() {
-    @Override
-    public void actionPerformed(java.awt.event.ActionEvent e) {
-        dispose();
-        new StatusGUI().setVisible(true);
-        }
-    });
-
-    btnHistory.addActionListener(new java.awt.event.ActionListener() {
-    @Override
-    public void actionPerformed(java.awt.event.ActionEvent e) {
-        JOptionPane.showMessageDialog(null, "You are already on History page");
+        // เติมแถวว่างพอดีหน้าจอหลังเฟรมแสดงผลแล้ว + ตอน resize
+        addWindowListener(new WindowAdapter() {
+            @Override public void windowOpened(WindowEvent e) {
+                SwingUtilities.invokeLater(() -> ensureFullPageRows());
+            }
+        });
+        scroll.getViewport().addComponentListener(new ComponentAdapter() {
+            @Override public void componentResized(ComponentEvent e) {
+                ensureFullPageRows();
             }
         });
     }
 
-    
+    // ---------------- UI building ----------------
+    private JPanel buildSidebar() {
+    JPanel sidebar = new JPanel();
+    sidebar.setPreferredSize(new Dimension(180, 650));
+    sidebar.setBackground(Color.WHITE);
+    sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
+
+    ImageIcon adminIcon = new ImageIcon(getClass().getResource("/GUI/Icon/images2.png"));
+    Image img = adminIcon.getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH);
+    JLabel lblAdmin = new JLabel("ADMIN", new ImageIcon(img), SwingConstants.CENTER);
+    lblAdmin.setFont(new Font("Tahoma", Font.BOLD, 20));
+    lblAdmin.setAlignmentX(Component.CENTER_ALIGNMENT);
+    lblAdmin.setHorizontalTextPosition(SwingConstants.RIGHT);
+    lblAdmin.setIconTextGap(8);
+
+    JButton btnHome    = navBtn("Home");
+    JButton btnStatus  = navBtn("Status");
+    JButton btnHistory = navBtn("History");
+    JButton btnBack    = navBtn("BACK");  // ✅ ปุ่ม BACK
+
+    // วางปุ่ม
+    sidebar.add(Box.createVerticalStrut(28));
+    sidebar.add(lblAdmin);
+    sidebar.add(Box.createVerticalStrut(40));
+    sidebar.add(btnHome);
+    sidebar.add(Box.createVerticalStrut(18));
+    sidebar.add(btnStatus);
+    sidebar.add(Box.createVerticalStrut(18));
+    sidebar.add(btnHistory);
+
+    sidebar.add(Box.createVerticalGlue()); // ✅ ดัน BACK ไปล่างสุด
+    sidebar.add(btnBack);
+    sidebar.add(Box.createVerticalStrut(18));
+
+    // Action
+    btnHome.addActionListener(e -> { dispose(); new AdminHomeGUI().setVisible(true); });
+    btnStatus.addActionListener(e -> { dispose(); new StatusGUI().setVisible(true); });
+    btnHistory.addActionListener(e -> JOptionPane.showMessageDialog(this, "You are already on History page"));
+    btnBack.addActionListener(e -> {        dispose();new RoomS().setVisible(true);}); // ✅ กดแล้วกลับหน้า RoomS (Admin)
+
+    return sidebar;
 }
 
+
+    // ปุ่มเมนู: ขนาดเท่ากัน + ฟอนต์หนา 18 (ใหญ่เหมือนที่ขอ)
+    private JButton navBtn(String text) {
+        JButton b = new JButton(text);
+        Dimension sz = new Dimension(170, 52);       // พอดีกับ sidebar 180px
+        b.setPreferredSize(sz);
+        b.setMaximumSize(sz);
+        b.setMinimumSize(sz);
+        b.setAlignmentX(Component.CENTER_ALIGNMENT);
+        b.setFont(new Font("Tahoma", Font.PLAIN, 16)); 
+        b.setMargin(new Insets(10, 18, 10, 18));
+        b.setFocusPainted(false);
+        return b;
+    }
+
+    private JComponent buildHeader() {
+        JPanel header = new JPanel(new GridBagLayout());
+        header.setBackground(new Color(210, 225, 250));
+        header.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(190,200,215)));
+
+        JLabel title = new JLabel("All History", SwingConstants.CENTER);
+        title.setFont(new Font("Tahoma", Font.BOLD, 30)); // หัวข้อใหญ่
+        title.setForeground(new Color(40, 40, 40));
+
+        GridBagConstraints gc = new GridBagConstraints();
+        gc.insets = new Insets(16, 16, 16, 16);
+        header.add(title, gc);
+        return header;
+    }
+
+    private JComponent buildTableArea() {
+        // หัวตาราง: ชื่อ | ห้อง | เวลา | วันที่
+        String[] cols = {"ชื่อ", "ห้อง", "เวลา", "วันที่"};
+        model = new DefaultTableModel(cols, 0) {
+            @Override public boolean isCellEditable(int r, int c) { return false; }
+        };
+
+        table = new JTable(model) {
+            @Override public Component prepareRenderer(TableCellRenderer r, int row, int col) {
+                Component c = super.prepareRenderer(r, row, col);
+                if (!isRowSelected(row)) c.setBackground(row % 2 == 0 ? new Color(248,250,255) : Color.WHITE);
+                else c.setBackground(new Color(204,224,255));
+                return c;
+            }
+        };
+        table.setRowHeight(28);
+        table.setFillsViewportHeight(true);
+        table.setShowGrid(true);
+        table.setGridColor(new Color(215, 220, 230));
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+        JTableHeader h = table.getTableHeader();
+        ((DefaultTableCellRenderer) h.getDefaultRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
+        h.setFont(h.getFont().deriveFont(Font.BOLD, 16f)); // หัวคอลัมน์ใหญ่ขึ้นเล็กน้อยให้บาลานซ์กับปุ่ม
+        h.setBackground(new Color(235, 240, 250));
+
+        // จัดกึ่งกลางเฉพาะคอลัมน์ ห้อง/เวลา/วันที่
+        DefaultTableCellRenderer center = new DefaultTableCellRenderer();
+        center.setHorizontalAlignment(SwingConstants.CENTER);
+        table.getColumnModel().getColumn(1).setCellRenderer(center); // ห้อง
+        table.getColumnModel().getColumn(2).setCellRenderer(center); // เวลา
+        table.getColumnModel().getColumn(3).setCellRenderer(center); // วันที่
+
+        // ความกว้างคร่าว ๆ
+        table.getColumnModel().getColumn(0).setPreferredWidth(260); // ชื่อ
+        table.getColumnModel().getColumn(1).setPreferredWidth(80);  // ห้อง
+        table.getColumnModel().getColumn(2).setPreferredWidth(180); // เวลา
+        table.getColumnModel().getColumn(3).setPreferredWidth(140); // วันที่
+
+        scroll = new JScrollPane(table);
+        scroll.setBorder(BorderFactory.createEmptyBorder());
+        scroll.getViewport().setBackground(Color.WHITE);
+        return scroll;
+    }
+
+    // ---------------- Core: เติม "แถวว่าง" ให้เต็มจอ ----------------
+    private void ensureFullPageRows() {
+        if (scroll == null || table == null || model == null) return;
+
+        // ลบแถวว่างเก่าก่อน
+        for (int i = model.getRowCount() - 1; i >= 0; i--) {
+            boolean emptyRow = true;
+            for (int c = 0; c < model.getColumnCount(); c++) {
+                Object v = model.getValueAt(i, c);
+                if (v != null && !v.toString().isEmpty()) { emptyRow = false; break; }
+            }
+            if (emptyRow) model.removeRow(i);
+        }
+
+        int rowH = table.getRowHeight();
+        int headerH = table.getTableHeader().getHeight();
+        int viewportH = scroll.getViewport().getHeight();
+
+        int needRows = Math.max(10, (viewportH - headerH) / rowH);
+        int toAdd = needRows - model.getRowCount();
+        for (int i = 0; i < toAdd; i++) {
+            model.addRow(new Object[]{"", "", "", ""});
+        }
+    }
+
+    // ----- ใส่ข้อมูลจริงภายหลัง -----
+    /** rows: {ชื่อ, ห้อง, เวลา, วันที่} */
+    public void setHistoryData(java.util.List<Object[]> rows) {
+        model.setRowCount(0);
+        for (Object[] r : rows) model.addRow(r);
+        ensureFullPageRows();
+    }
+}

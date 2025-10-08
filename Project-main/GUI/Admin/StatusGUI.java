@@ -1,11 +1,11 @@
 package GUI.Admin;
+
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.table.*;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Enumeration;
@@ -15,12 +15,12 @@ public class StatusGUI extends JFrame {
     private DefaultTableModel model1, model2;
     private JPanel sectionFloor1, sectionFloor2;
     private JComboBox<String> cbDate, cbFloor;
-    private JTable tableAll;  
-    private DefaultTableModel modelAll;  
+    private JTable tableAll;
+    private DefaultTableModel modelAll;
     private JPanel sectionAll;
 
     public StatusGUI() {
-        // Fix ฟอนต์ไทย
+        // ฟอนต์ไทยให้สวยเนียนทั้งแอป
         installThaiUIFont(new Font("Tahoma", Font.PLAIN, 14));
 
         setTitle("ตารางการจอง (ADMIN)");
@@ -40,7 +40,7 @@ public class StatusGUI extends JFrame {
         lblTitle.setFont(new Font("Tahoma", Font.BOLD, 30));
         lblTitle.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
 
-        // Filter
+        // Filter แถวบน
         JPanel filter = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 5));
         filter.setBackground(new Color(240, 245, 255));
 
@@ -48,11 +48,7 @@ public class StatusGUI extends JFrame {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         LocalDate today = LocalDate.now();
         LocalDate tomorrow = today.plusDays(1);
-
-        cbDate = new JComboBox<>(new String[]{
-                today.format(formatter),
-                tomorrow.format(formatter)
-        });
+        cbDate = new JComboBox<>(new String[]{ today.format(formatter), tomorrow.format(formatter) });
 
         JLabel lblFloor = new JLabel("เลือกชั้น:");
         cbFloor = new JComboBox<>(new String[]{"ทุกชั้น", "ชั้น 1", "ชั้น 2"});
@@ -78,11 +74,12 @@ public class StatusGUI extends JFrame {
 
         content.add(north, BorderLayout.NORTH);
 
-        // Floor sections
+        // Sections: ทุกชั้น / ชั้น 1 / ชั้น 2
         sectionAll    = buildAllSection("ทุกชั้น");   // ค่าเริ่มต้น
         sectionFloor1 = buildFloorSection("ชั้น 1", true);
         sectionFloor2 = buildFloorSection("ชั้น 2", false);
 
+        // เริ่มแสดงเฉพาะ "ทุกชั้น"
         sectionFloor1.setVisible(false);
         sectionFloor2.setVisible(false);
 
@@ -97,13 +94,13 @@ public class StatusGUI extends JFrame {
 
         content.add(center, BorderLayout.CENTER);
 
-        // Action buttons
+        // Action buttons (กำหนดสถานะช่อง)
         JPanel action = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 15));
         action.setBackground(new Color(240, 245, 255));
 
         JButton btnAvailable = makeActionButton("Available", Color.GREEN, Color.BLACK);
-        JButton btnReserved  = makeActionButton("Reserved", Color.RED, Color.BLACK);
-        JButton btnClosed    = makeActionButton("Closed", Color.BLACK, Color.BLACK);
+        JButton btnReserved  = makeActionButton("Reserved", Color.RED, Color.WHITE);
+        JButton btnClosed    = makeActionButton("Closed", Color.BLACK, Color.WHITE);
         JButton btnReset     = makeActionButton("Reset", new Color(200, 200, 255), Color.BLACK);
 
         btnAvailable.addActionListener(e -> setStatus("Available"));
@@ -122,14 +119,17 @@ public class StatusGUI extends JFrame {
         add(sidebar, BorderLayout.WEST);
         add(content, BorderLayout.CENTER);
 
+        // เปลี่ยนชั้น → เปลี่ยน section ที่แสดง
         cbFloor.addActionListener(e -> updateFloorVisibility());
     }
 
+    /* ========================= Sidebar ========================= */
     private JPanel buildSidebar() {
         JPanel sidebar = new JPanel(new BorderLayout());
         sidebar.setBackground(Color.WHITE);
         sidebar.setPreferredSize(new Dimension(200, 750));
 
+        // Header: โลโก้ + ADMIN
         JLabel logo = new JLabel();
         try {
             ImageIcon icon = new ImageIcon(getClass().getResource("/GUI/Icon/images2.png"));
@@ -147,13 +147,15 @@ public class StatusGUI extends JFrame {
 
         sidebar.add(header, BorderLayout.NORTH);
 
+        // ปุ่มเมนู
         JPanel menuPanel = new JPanel();
         menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.Y_AXIS));
         menuPanel.setBackground(Color.WHITE);
 
-        JButton bHome = makeSideButton("Home");
-        JButton bStatus = makeSideButton("Status");
+        JButton bHome    = makeSideButton("Home");
+        JButton bStatus  = makeSideButton("Status");
         JButton bHistory = makeSideButton("History");
+        JButton bBack    = makeSideButton("BACK"); // ปุ่มย้อนกลับ (ล่างสุด)
 
         menuPanel.add(bHome);
         menuPanel.add(Box.createVerticalStrut(15));
@@ -161,45 +163,51 @@ public class StatusGUI extends JFrame {
         menuPanel.add(Box.createVerticalStrut(15));
         menuPanel.add(bHistory);
 
-        bHome.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                AdminHomeGUI home = new AdminHomeGUI();
-                home.setVisible(true);
-                dispose();
-            }
+        // ดัน BACK ไปล่างสุด
+        menuPanel.add(Box.createVerticalGlue());
+        menuPanel.add(bBack);
+        menuPanel.add(Box.createVerticalStrut(12));
+
+        // Actions
+        bHome.addActionListener(e -> {
+            AdminHomeGUI home = new AdminHomeGUI();
+            home.setVisible(true);
+            dispose();
         });
 
-        bStatus.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(null, "You are already on Status page");
-            }
+        bStatus.addActionListener(e ->
+            JOptionPane.showMessageDialog(this, "You are already on Status page")
+        );
+
+        bHistory.addActionListener(e -> {
+            HistoryGUI historyGUI = new HistoryGUI();
+            historyGUI.setVisible(true);
+            dispose();
         });
 
-        bHistory.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                HistoryGUI historyGUI = new HistoryGUI();
-                historyGUI.setVisible(true);
-                dispose();
-            }
+        // BACK → กลับหน้า RoomS
+        bBack.addActionListener(e -> {
+        new GUI.RoomS().setVisible(true); dispose();
         });
 
         sidebar.add(menuPanel, BorderLayout.CENTER);
-
         return sidebar;
     }
 
     private JButton makeSideButton(String text) {
         JButton b = new JButton(text);
-        b.setPreferredSize(new Dimension(160, 45));
-        b.setMaximumSize(new Dimension(160, 45));
-        b.setFocusPainted(false);
+        Dimension size = new Dimension(170, 52);     // ขนาดใหญ่พอดีกับ sidebar
+        b.setPreferredSize(size);
+        b.setMaximumSize(size);
+        b.setMinimumSize(size);
         b.setAlignmentX(Component.CENTER_ALIGNMENT);
+        b.setFont(new Font("Tahoma", Font.PLAIN, 16)); 
+        b.setFocusPainted(false);
+        b.setMargin(new Insets(8, 16, 8, 16));
         return b;
     }
 
+    /* ========================= Sections ========================= */
     private JPanel buildAllSection(String title) {
         String[] cols = {"ห้อง", "09:00-10:00", "10:00-11:00", "11:00-12:00",
                 "12:00-13:00", "13:00-14:00", "14:00-15:00", "15:00-16:00"};
@@ -214,10 +222,7 @@ public class StatusGUI extends JFrame {
         };
 
         modelAll = new DefaultTableModel(dataAll, cols) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false; // ❌ ปิดแก้ไข
-            }
+            @Override public boolean isCellEditable(int row, int column) { return false; }
         };
         tableAll = new JTable(modelAll);
         setupTable(tableAll);
@@ -258,19 +263,13 @@ public class StatusGUI extends JFrame {
 
         if (floor1) {
             model1 = new DefaultTableModel(data1, cols) {
-                @Override
-                public boolean isCellEditable(int row, int column) {
-                    return false; // ❌ ปิดแก้ไข
-                }
+                @Override public boolean isCellEditable(int row, int column) { return false; }
             };
             tableFloor1 = new JTable(model1);
             setupTable(tableFloor1);
         } else {
             model2 = new DefaultTableModel(data2, cols) {
-                @Override
-                public boolean isCellEditable(int row, int column) {
-                    return false; // ❌ ปิดแก้ไข
-                }
+                @Override public boolean isCellEditable(int row, int column) { return false; }
             };
             tableFloor2 = new JTable(model2);
             setupTable(tableFloor2);
@@ -313,9 +312,9 @@ public class StatusGUI extends JFrame {
                 if (c > 0) {
                     switch (v) {
                         case "Available": comp.setBackground(Color.GREEN); comp.setForeground(Color.BLACK); break;
-                        case "Reserved": comp.setBackground(Color.RED); comp.setForeground(Color.WHITE); break;
-                        case "Closed": comp.setBackground(Color.BLACK); comp.setForeground(Color.WHITE); break;
-                        default: comp.setBackground(Color.WHITE); comp.setForeground(Color.BLACK);
+                        case "Reserved":  comp.setBackground(Color.RED);   comp.setForeground(Color.WHITE); break;
+                        case "Closed":    comp.setBackground(Color.BLACK); comp.setForeground(Color.WHITE); break;
+                        default:          comp.setBackground(Color.WHITE); comp.setForeground(Color.BLACK);
                     }
                     setHorizontalAlignment(SwingConstants.CENTER);
                 } else {
@@ -344,15 +343,17 @@ public class StatusGUI extends JFrame {
         return b;
     }
 
+    /* ========================= Actions ========================= */
     private void setStatus(String status) {
-        JTable active = tableFloor1.getSelectedRow()>=0 ? tableFloor1 :
-                tableFloor2.getSelectedRow()>=0 ? tableFloor2 :
-                tableAll.getSelectedRow()>=0 ? tableAll : null;
+        JTable active =
+              (tableFloor1 != null && tableFloor1.getSelectedRow() >= 0) ? tableFloor1 :
+              (tableFloor2 != null && tableFloor2.getSelectedRow() >= 0) ? tableFloor2 :
+              (tableAll   != null && tableAll.getSelectedRow()   >= 0) ? tableAll   : null;
 
         if (active != null) {
             int r = active.getSelectedRow();
             int c = active.getSelectedColumn();
-            if (r >= 0 && c > 0) {
+            if (r >= 0 && c > 0) { // c > 0 เพื่อไม่แก้คอลัมน์ "ห้อง"
                 ((DefaultTableModel)active.getModel()).setValueAt(status, r, c);
                 active.repaint();
             }
@@ -364,16 +365,16 @@ public class StatusGUI extends JFrame {
         resetModel(model2);
         resetModel(modelAll);
 
-        tableFloor1.repaint();
-        tableFloor2.repaint();
-        tableAll.repaint();
+        if (tableFloor1 != null) tableFloor1.repaint();
+        if (tableFloor2 != null) tableFloor2.repaint();
+        if (tableAll   != null) tableAll.repaint();
     }
 
     private void resetModel(DefaultTableModel model) {
         if (model == null) return;
-        for (int r=0;r<model.getRowCount();r++)
-            for (int c=1;c<model.getColumnCount();c++)
-                model.setValueAt("Available",r,c);
+        for (int r=0; r<model.getRowCount(); r++)
+            for (int c=1; c<model.getColumnCount(); c++)
+                model.setValueAt("Available", r, c);
     }
 
     private void updateFloorVisibility() {
@@ -392,15 +393,18 @@ public class StatusGUI extends JFrame {
             sectionFloor1.setVisible(false);
             sectionFloor2.setVisible(true);
         }
+        // Revalidate เพื่อให้เลย์เอาต์จัดใหม่
+        SwingUtilities.getWindowAncestor(sectionAll).validate();
     }
 
+    /* ========================= Utils ========================= */
     public static void installThaiUIFont(Font f) {
         FontUIResource fui = new FontUIResource(f);
         Enumeration<Object> keys = UIManager.getDefaults().keys();
         while(keys.hasMoreElements()){
             Object k = keys.nextElement();
             Object v = UIManager.get(k);
-            if(v instanceof FontUIResource) UIManager.put(k,fui);
+            if(v instanceof FontUIResource) UIManager.put(k, fui);
         }
     }
 
