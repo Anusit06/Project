@@ -5,6 +5,7 @@
 package GUI;
 
 import GUI.Admin.AdminHomeGUI;
+import Model.UserSession;
 
 /**
  *
@@ -23,6 +24,15 @@ public class RoomL extends javax.swing.JFrame {
         setResizable(false);         // ไม่ให้ยืด/หด
                              // จัดขนาด JFrame ให้พอดีกับ Components ข้างใน
         setLocationRelativeTo(null); // จัด JFrame ให้อยู่กลางจอ
+        applyRoleVisibility();
+    }
+     private void applyRoleVisibility() {
+        // ถ้ายังไม่ได้ login หรือไม่ใช่ admin → ซ่อนปุ่ม
+        if (!UserSession.isAdmin()) {
+            jButton33.setVisible(false);
+        } else {
+            jButton33.setVisible(true);
+        }
     }
 
     /**
