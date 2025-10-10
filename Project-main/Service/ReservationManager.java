@@ -64,7 +64,7 @@ public class ReservationManager {
         return true;
     }
 
-    /** จองถ้าว่างจริง: รีโหลด → ตรวจ → merge → เซฟ → broadcast */
+    
     public synchronized boolean addIfAvailable(Reservation r) {
         if (r == null) return false;
         loadAllFromFile();
@@ -239,4 +239,5 @@ public class ReservationManager {
         return new ArrayList<>(listeners);
     }
 }
+
 
