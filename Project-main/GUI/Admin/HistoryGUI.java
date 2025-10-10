@@ -247,8 +247,9 @@ public class HistoryGUI extends JFrame implements ReservationManager.Reservation
         super.dispose();
     }
 
-    /* ===== main (สำหรับทดสอบแยกไฟล์) ===== */
+    
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new HistoryGUI().setVisible(true));
     }
 }
+
