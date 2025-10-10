@@ -86,7 +86,7 @@ public class ReservationManager {
     }
 
     
-    /** เดิม add() → ให้ไปใช้ addIfAvailable() เพื่อความปลอดภัย */
+
     public synchronized void add(Reservation r) { addIfAvailable(r); }
 
     /** แอดมินเปลี่ยนสถานะ (upsert + merge) */
@@ -102,8 +102,7 @@ public class ReservationManager {
     try { actor = Model.UserSession.getCurrentUsername(); } catch (Exception ignore) {}
 
     if (target == null) {
-        // ⬇️ เดิมใส่ "System" → เปลี่ยนเป็น null/"" จะไม่ไปโผล่ใน History ว่าใคร "จอง"
-        String username = null; // หรือ "" ตามที่ Reservation/formatLine รองรับ
+        String username = null; 
         target = new Reservation(username, room, date, start, end, newStatus);
         reservations.add(target);
     } else {
@@ -240,3 +239,4 @@ public class ReservationManager {
         return new ArrayList<>(listeners);
     }
 }
+
