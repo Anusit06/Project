@@ -35,8 +35,6 @@ public class UserService {
             if (!hasAdmin) {
                 Admin defaultAdmin = new Admin("owen", "Owen1234", "0000000000", "admin@system.com");
 
-                // ⛳ แนะนำให้มีเมธอดนี้ใน FileHandler: saveUsers(IUser user)
-                // ถ้ายังไม่มี ให้ทำ overload เพิ่ม หรือจะแยกเป็น saveAdmin(...) ก็ได้
                 FileHandler.saveUsers(defaultAdmin);
 
                 users.add(defaultAdmin);
@@ -54,10 +52,10 @@ public class UserService {
      */
     public boolean login(String username, String password) {
         try {
-            for (IUser user : users) { // ✅ ไม่ต้องโหลดไฟล์ซ้ำ
+            for (IUser user : users) { 
                 if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
 
-                    // ✅ เก็บทั้ง username + role ไว้ใน session
+                    // เก็บทั้ง username + role ไว้ใน session
                     UserSession.login(user.getUsername(), user.getRole());
 
                     System.out.println("เข้าสู่ระบบสำเร็จ: " + username + " (" + user.getRole() + ")");
@@ -114,3 +112,4 @@ public class UserService {
         UserSession.clearSession();
     }
 }
+
