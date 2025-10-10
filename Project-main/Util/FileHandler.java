@@ -32,7 +32,7 @@ public class FileHandler {
             }
             writer.newLine(); // ขึ้นบรรทัดใหม่
         } catch (Exception e) {
-            System.out.println("❌ เกิดข้อผิดพลาดตอนบันทึกผู้ใช้: " + e);
+            System.out.println(" เกิดข้อผิดพลาดตอนบันทึกผู้ใช้: " + e);
         }
     }
 
@@ -70,9 +70,10 @@ public class FileHandler {
                 }
             }
         } catch (Exception e) {
-            System.out.println("❌ เกิดข้อผิดพลาดตอนโหลดผู้ใช้: " + e);
+            System.out.println(" เกิดข้อผิดพลาดตอนโหลดผู้ใช้: " + e);
         }
 
         return users;
     }
 }
+
